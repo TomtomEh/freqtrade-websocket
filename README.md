@@ -39,3 +39,13 @@ around line 66
         # Check config consistency here since strategies can set certain options
         validate_config_consistency(config)
         ```
+## How to keep it running in case of falure
+Websockets can get closed, or connection can be lost, managing it indivudually can be a source of problems and error prone. The solution employed is simply exit freqtrade as soon as there is a problem, so you can yous a shell script that will restart it automatically:
+```bash
+while :
+do
+  freqtrade  trade       --config config.json --config config_obonly_dr.json    --db-url sqlite:///tradesv3_wild.sqlite
+  sleep 10
+done
+
+```
