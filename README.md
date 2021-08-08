@@ -21,11 +21,12 @@ CombinedBinHAndClucV4WS is an example of using this interface to code a strategy
 # How to directly trigger a buy and sell and choose the price.
 To directly trigger a buy or sell, BinanceStream must have a refernce to the freqtradebot class. 
 It requires adding the following line into freqtradebot.py:
-```        self.strategy.set_ft(self)
+```python       
+self.strategy.set_ft(self)
 ```
 
 around line 66
-```
+```python
         # Cache values for 1800 to avoid frequent polling of the exchange for prices
         # Caching only applies to RPC methods, so prices for open trades are still
         # refreshed once every iteration.
