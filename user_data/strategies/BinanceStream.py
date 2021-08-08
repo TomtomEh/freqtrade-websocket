@@ -76,7 +76,7 @@ class BasePairInfo:
             if trade.pair.replace("/","") == pair.replace("/",""):
                 found_trade = trade
         return found_trade
-
+    
     def execute_sell(self, price, reason):
         sell_reason=SellCheckTuple(sell_type=reason)
       
@@ -149,7 +149,8 @@ class BinanceStream(IStrategy):
     def init(self):
         if self._init:
             return 
-
+    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        return dataframe
     def set_ft(self,ft):
         self.ft=ft  
         BasePairInfo.set_ft(ft)
@@ -185,9 +186,9 @@ class BinanceStream(IStrategy):
         res = BasePairInfo.get(pair)
         if res is None:
             BinanceStream.set_instance(self)
-            res=BasePairInfo(pair)
-            self.init_indicators(res)
-            BasePairInfo.set(pair,res)
+            BasePairInfo.set(pair,BasePairInfo(pair))
+
+            self.init_indicators(BasePairInfo.get(pair))
         return res  
     def init_indicators(self,pair_info):
         pass      
