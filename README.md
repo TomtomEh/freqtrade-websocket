@@ -42,6 +42,38 @@ around line 66
         # Check config consistency here since strategies can set certain options
         validate_config_consistency(config)
 ```
+## Callback data
+###  new_ticker
+New ticker data is exactly as provided by the Binance API:
+```python
+   
+        Message format:
+        {
+        "e": "kline",     // Event type
+        "E": 123456789,   // Event time
+        "s": "BNBBTC",    // Symbol
+        "k": {
+            "t": 123400000, // Kline start time
+            "T": 123460000, // Kline close time
+            "s": "BNBBTC",  // Symbol
+            "i": "1m",      // Interval
+            "f": 100,       // First trade ID
+            "L": 200,       // Last trade ID
+            "o": "0.0010",  // Open price
+            "c": "0.0020",  // Close price
+            "h": "0.0025",  // High price
+            "l": "0.0015",  // Low price
+            "v": "1000",    // Base asset volume
+            "n": 100,       // Number of trades
+            "x": false,     // Is this kline closed?
+            "q": "1.0000",  // Quote asset volume
+            "V": "500",     // Taker buy base asset volume
+            "Q": "0.500",   // Taker buy quote asset volume
+            "B": "123456"   // Ignore
+        }
+        }
+           
+```
 ## How to keep it running in case of falure
 Websockets can get closed, or connection can be lost, managing it indivudually can be a source of problems and error prone. The solution employed is simply exit freqtrade as soon as there is a problem, so you can yous a shell script that will restart it automatically:
 ```bash
