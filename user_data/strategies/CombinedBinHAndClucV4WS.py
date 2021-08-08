@@ -1,19 +1,7 @@
-import freqtrade.vendor.qtpylib.indicators as qtpylib
 import numpy as np
-import talib.abstract as ta
-from freqtrade.strategy.interface import IStrategy 
-from freqtrade.strategy import timeframe_to_prev_date
-import os
-from pandas import DataFrame
-from datetime import datetime, timedelta
-from freqtrade.data.converter import order_book_to_dataframe
-from talipp.indicators import EMA, SMA ,BB,RSI
-
+from talipp.indicators import EMA, SMA ,BB, RSI
 from user_data.strategies.BinanceStream import BaseIndicator, OrderBook,BinanceStream
 
-
- 
-        
     
         
 class CombinedBinHAndClucV4WS(BinanceStream):
@@ -26,18 +14,10 @@ class CombinedBinHAndClucV4WS(BinanceStream):
     stoploss = -0.9 # effectively disabled.
 
     timeframe = '1h'
-    compute_original=False
     # Sell signal
     use_sell_signal = True
     sell_profit_only = True
     sell_profit_offset = 0.001 # it doesn't meant anything, just to guarantee there is a minimal profit.
-    ignore_roi_if_buy_signal = True
-
-    # Trailing stoploss
-    trailing_stop = True
-    trailing_only_offset_is_reached = True
-    trailing_stop_positive = 0.007
-    trailing_stop_positive_offset = 0.018
 
     # Custom stoploss
     use_custom_stoploss = False
@@ -61,8 +41,9 @@ class CombinedBinHAndClucV4WS(BinanceStream):
         pair_info.ob=OrderBook(pair,currency="USDT")
         pair_info.indicators_buy = False
         pair_info.ticker_buy =False
-    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        return dataframe
+        pair_info.ticker_sell =False
+
+        pair_info.indicators_sell = False
     def new_ticker(self,pair_info, candle):
         pair_info.ticker_buy=True    
         last_price = float(candle["c"]) 
@@ -70,27 +51,34 @@ class CombinedBinHAndClucV4WS(BinanceStream):
             pair_info.ticker_buy = True
         else:
             pair_info.ticker_buy = False
-            
+        pair_info.ticker_sell = not pair_info.ticker_buy
+   
        
     def new_ob(self,pair_info,depth_cache):
         delta_bid = 0.002
         delta_ask = 0.002
         ob_ratio = 1.3
-        if  not pair_info.ticker_buy or not pair_info.indicators_buy:
+        should_buy =  pair_info.ticker_buy and pair_info.indicators_buy
+        should_sell =  (not pair_info.ticker_buy) and pair_info.indicators_sell
+
+        if   should_buy  == False and  should_sell == False:
             return 
-        bids=np.array(depth_cache.get_bids())
-        asks=np.array(depth_cache.get_asks())
-        mid_price=(0.5*bids[0][0]+0.5*asks[0][0])
+        bids = np.array(depth_cache.get_bids())
+        asks = np.array(depth_cache.get_asks())
+        mid_price = (0.5*bids[0][0]+0.5*asks[0][0])
+        if(should_sell):
+            pair_info.sell(mid_price)  
+            return  
 
         bid_cut = mid_price - mid_price*delta_bid
         ask_cut = mid_price + mid_price*delta_ask
-        bid_side=bids[bids[:,0]>bid_cut]
-        ask_side=asks[asks[:,0]<ask_cut]
-        wall_side=bid_side
-        asum=ask_side[:,1].sum() 
-        bsum=bid_side[:,1].sum() 
+        bid_side = bids[bids[:,0]>bid_cut]
+        ask_side = asks[asks[:,0]<ask_cut]
+        wall_side = bid_side
+        asum = ask_side[:,1].sum() 
+        bsum = bid_side[:,1].sum() 
         if bsum > ob_ratio*asum:
-            pair_info.buy()    
+            pair_info.buy(mid_price)    
     
     def new_candle(self,pair_info):
         pair_info.indicators_buy=True    
@@ -130,6 +118,8 @@ class CombinedBinHAndClucV4WS(BinanceStream):
         )
 
         if sell_condition:
-            pair_info.sell()
+            pair_info.indicators_sell=True
+        else:
+            pair_info.indicators_sell=False    
     
   
