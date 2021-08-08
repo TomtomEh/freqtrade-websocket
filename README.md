@@ -5,6 +5,9 @@ It also uses talipp for computing
 - Live Ticker
 - Live Order Book Data
 - Live Candles
+## Requirements
+- python-binance
+- talipp
 ## Advantages over using standard freqtrade data
 Freqtrade data is obtained using requests, so that it asks for new data and then it will receive the results. Using websockets you will get the pair information pushed from binance servers as soon as they are computed. For instance, while testing using about 100 pairs, freqtrade took almost one minute to start computing the new candle, while using this approcach in 3s all pairs were already processed.
 
