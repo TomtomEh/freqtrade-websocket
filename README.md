@@ -52,3 +52,5 @@ do
 done
 
 ```
+## Hints
+- Use a large timeframe on freqtrade (1h) to avoid it fetching data too often, and get the desired timeframe from BaseIndicator 
