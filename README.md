@@ -13,7 +13,7 @@ Freqtrade data is obtained using requests: it asks for new data and then it will
 
 Using talipp reduce the computation power required, since data are update by only adding the contribution of the new candle to the already computed data. While freqtrade computes the indicators on their integrity and by default for 1000 timeframes.
 
-With a minimal change (see bellow) one can trigger a buy directly from the signal reducing even more the time between taking decision and buying. Also this option allow to choose the buy and sell prices in the strategy (for instance using the orderbook information)
+With a minimal change (see bellow) one can trigger a buy or sell directly from the function that computes the signal, reducing even more the time between taking decision and executing a trade. Also this option allow to choose the buy and sell prices inside the strategy (for instance using the orderbook information).
 
 ## How to use it 
 CombinedBinHAndClucV4WS is an example of using this interface to code a strategy. In a few words what you need is:
