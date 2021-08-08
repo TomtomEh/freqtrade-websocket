@@ -30,7 +30,7 @@ class CombinedBinHAndClucV4WS(BinanceStream):
 
     
    
-    def init_indicators(self,pair_info):
+    def init_pair_info(self,pair_info):
         pair = pair_info.pair
         pair_info.bi=BaseIndicator(pair,timeframe="5m",currency="USDT")
         pair_info.bb_40=BB(40,2.0,input_indicator=pair_info.bi.c) #Attach BB to the base close indicator
