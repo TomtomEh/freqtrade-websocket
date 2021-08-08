@@ -45,7 +45,7 @@ around line 66
 ## Callback data
 ###  new_ticker
 New ticker data is exactly as provided by the Binance API:
-```python
+```json
    
         Message format:
         {
@@ -74,6 +74,7 @@ New ticker data is exactly as provided by the Binance API:
         }
            
 ```
+
 ## How to keep it running in case of falure
 Websockets can get closed, or connection can be lost, managing it indivudually can be a source of problems and error prone. The solution employed is simply exit freqtrade as soon as there is a problem, so you can yous a shell script that will restart it automatically:
 ```bash
