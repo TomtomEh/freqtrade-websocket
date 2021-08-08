@@ -105,11 +105,8 @@ class CombinedBinHAndClucV4WS(BinanceStream):
            
         ))
        
-        if buy_condition:
-           pair_info.indicators_buy = True
-        else:
-           pair_info.indicators_buy = False
-            
+        pair_info.indicators_buy = buy_condition
+        
 
         sell_condition=(
             close > pair_info.bb20[-1].ub and
@@ -117,9 +114,7 @@ class CombinedBinHAndClucV4WS(BinanceStream):
             volume > 0 
         )
 
-        if sell_condition:
-            pair_info.indicators_sell=True
-        else:
-            pair_info.indicators_sell=False    
+        pair_info.indicators_sell=sell_condition
+       
     
   
