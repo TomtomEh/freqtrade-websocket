@@ -189,7 +189,7 @@ class BinanceStream(IStrategy):
             BasePairInfo.set(pair,BasePairInfo(pair))
 
             self.init_pair_info(BasePairInfo.get(pair))
-        return res  
+        return  BasePairInfo.get(pair)  
     def init_pair_info(self,pair_info):
         pass      
     def check_buy(self,pair):
