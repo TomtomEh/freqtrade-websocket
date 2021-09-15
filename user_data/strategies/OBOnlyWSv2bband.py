@@ -20,11 +20,11 @@ class OBOnlyWSv2bband(BinanceStream):
     stoploss = -0.11  
 
 
-    timeframe = '1m'
+    timeframe = '1h'
     use_sell_signal = True
     sell_profit_only = False
     # Run "populate_indicators()" only for new candle.
-    process_only_new_candles = True
+    process_only_new_candles = False
     strat_data={
         "ratio_buy1":False,
         "ratio_buy2":False,
