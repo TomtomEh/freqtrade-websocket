@@ -17,7 +17,7 @@ class OBOnlyWSv2bband(BinanceStream):
     INTERFACE_VERSION = 2
 
 
-    stoploss = -0.11  
+    stoploss = -0.99  
 
 
     timeframe = '1h'
