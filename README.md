@@ -22,7 +22,7 @@ CombinedBinHAndClucV4WS is an example of using this interface to code a strategy
 - Implement new_candle, new_ob or new_ticker to process new data (be carefull with the amount of computation, you will usually have a call every second)
 - Call pair_info.buy() and pair_info.sell() to trigger a buy or a sell
 # How to directly trigger a buy and sell and choose the price.
-To directly trigger a buy or sell, BinanceStream must have a refernce to the freqtradebot class. 
+To directly trigger a buy or sell, BinanceStream must have a reference to the freqtradebot class. 
 It requires adding the following line into freqtradebot.py:
 ```python       
 self.strategy.set_ft(self)
@@ -87,3 +87,4 @@ done
 ```
 ## Hints
 - Use a large timeframe on freqtrade (1h) to avoid it fetching data too often, and get the desired timeframe from BaseIndicator 
+- If you are not using the set_ft() trick you must set process_only_new_candles=False so that it will check for buys every cycle
