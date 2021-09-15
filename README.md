@@ -9,7 +9,7 @@ It also uses talipp for computing
 - python-binance
 - talipp
 ## Advantages over using standard freqtrade data
-Freqtrade data is obtained using requests: it asks for new data and then it will receive the results. Using websockets you will get the pair information pushed from binance servers as soon as they are computed. For instance, while testing using about 100 pairs, freqtrade took almost one minute to start computing the new candle, while using this approcach in 3s all pairs were already processed.
+Freqtrade data is obtained using requests: it asks for new data and then it will receive the results. Using websockets you will get the pair information pushed from binance servers as soon as they are computed. For instance, while testing using about 100 pairs, freqtrade took almost one minute to start computing the new candle, while using this approach in 3s all pairs were already processed.
 
 Using talipp reduce the computation power required, since data are update by only adding the contribution of the new candle to the already computed data. While freqtrade computes the indicators on their integrity and by default for 1000 timeframes.
 
@@ -75,7 +75,7 @@ New ticker data is exactly as provided by the Binance API:
            
 ```
 
-## How to keep it running in case of falure
+## How to keep it running in case of failure
 Websockets can get closed, or connection can be lost, managing it indivudually can be a source of problems and error prone. The solution employed is simply exit freqtrade as soon as there is a problem, so you can yous a shell script that will restart it automatically:
 ```bash
 while :
