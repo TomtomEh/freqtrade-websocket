@@ -24,9 +24,11 @@ keys_map={
 _register = {}
 class BasePairInfo: 
     ft= None
+    last_time_refresh_trade_count=datetime.now()-timedelta(days=60)
+
     _data={}
     last_check = None
-
+    _open_trades=[]
     def __init__(self,pair):
         self.buy_signal=0
         self.pair=pair
@@ -63,25 +65,32 @@ class BasePairInfo:
             cls.last_check = now
             
          
-                        
-                    
-    def open_trade(self,pair):
+    def open_trades(self,force=False,pair = None):
+        #if self.backtesting:
+        #    return self.ft.open_trades(pair) 
         trade_filter = []
         trade_filter.append(Trade.is_open.is_(True))
-        query = Trade.get_trades()
+        if force or not BasePairInfo._open_trades or (datetime.now()-BasePairInfo.last_time_refresh_trade_count) > timedelta(seconds=20):
+            query = Trade.get_trades()
         
-        _open_trades = query.populate_existing().filter(*trade_filter).all()
-        found_trade = None
-        for trade in _open_trades :
-            if trade.pair.replace("/","") == pair.replace("/",""):
-                found_trade = trade
-        return found_trade
+            BasePairInfo._open_trades = query.populate_existing().filter(*trade_filter).all()
+            BasePairInfo.last_time_refresh_trade_count=datetime.now()
+        if pair:
+            found_trade = None
+            for trade in BasePairInfo._open_trades :
+            
+                if trade.pair.replace("/","") == pair.replace("/",""):
+                    found_trade = trade
+            return found_trade
+        return BasePairInfo._open_trades                    
+                    
+    
     
     def execute_sell(self, price, reason):
         sell_reason=SellCheckTuple(sell_type=reason)
       
         with self.ft._sell_lock:
-            trade=self.open_trade(self.pair)
+            trade=self.open_trades(force=True,pair=self.pair)
             
 
             if not trade:
@@ -99,7 +108,8 @@ class BasePairInfo:
                 except Exception as e:
                     print(e)  
     def execute_buy(self,price):
-        found_trade = self.open_trade(self.pair) 
+        found_trade=self.open_trades(force=True,pair=self.pair)
+
         if found_trade:
             return
 
@@ -355,4 +365,3 @@ class BaseIndicator:
     @staticmethod
     def get_path(symbol, interval):
         return f'{symbol.lower()}@kline_{interval}'
-
