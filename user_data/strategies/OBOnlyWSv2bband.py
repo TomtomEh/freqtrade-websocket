@@ -11,8 +11,8 @@ from talipp.indicators import EMA, SMA ,BB
 
 
 from user_data.strategies.BinanceStream import BaseIndicator, OrderBook,BinanceStream
-
-
+sell_pct={"SOL/BUSD":0.006}
+buy_delta={"SOL/BUSD":0.006}
 class OBOnlyWSv2bband(BinanceStream):
     INTERFACE_VERSION = 2
 
@@ -109,12 +109,9 @@ class OBOnlyWSv2bband(BinanceStream):
         if len(bb)>0:      
             iv=r2nw
            
-            #print(f"will added {iv} {bb[-1].lb}")
             bb.add_input_value(iv)
-            #print(f" added {iv} {bb[-1].lb}")
 
             bb.purge_oldest(1)
-            #print(f" pop {iv} {bb[-1].lb}")
 
            
 
@@ -153,7 +150,7 @@ class OBOnlyWSv2bband(BinanceStream):
         mid_price=(1*bids[0][0]+1*asks[0][0])/2
         
         
-        buy_price=(0.2*bids[0][0]+0.8*asks[0][0])
+        buy_price=(0.5*bids[0][0]+0.5*asks[0][0])
 
         if len(pi.bi.c) == 0 or pi.bi.c[-1][-1] > bids[0][0]:
              return
@@ -161,7 +158,7 @@ class OBOnlyWSv2bband(BinanceStream):
         if len(bb5)>0: 
             bbb=bb5[-1]
             cond1=mid_price<(bbb.cb)
-            cond2 = (bbb.cb-bbb.lb)> mid_price * 0.004
+            cond2 = (bbb.cb-bbb.lb)> mid_price *buy_delta.get(pi.pair, 0.0035)
             self.strat_data["ratio_buy1"]=cond1
             self.strat_data["ratio_buy2"]=cond2
             if not (cond1 and cond2):
@@ -184,7 +181,7 @@ class OBOnlyWSv2bband(BinanceStream):
      
     def check_sell(self, pi, bids, asks):
         
-        sell_price=(0.1*bids[0][0]+0.9*asks[0][0])
+        sell_price=(0.0*bids[0][0]+1.00*asks[0][0])
         ob_price=(0.2*bids[0][0]+0.8*asks[0][0])
         mid_price=(0.5*bids[0][0]+0.5*asks[0][0])
         pair=pi.pair
@@ -196,10 +193,8 @@ class OBOnlyWSv2bband(BinanceStream):
         found_trade= pi.open_trades(force=True,pair=pair)
         if(found_trade == None):
             return
-        print("found trade")
         if len(pi.bi.c) == 0 or  pi.bi.c[-1][-1] < asks[0][0]:
             return
-        print("check1")
                 
         gain = (mid_price-found_trade.open_rate)/found_trade.open_rate
         
@@ -228,11 +223,11 @@ class OBOnlyWSv2bband(BinanceStream):
             pi.sell_signal=prev_sell_signal+1
            
  
-            if gain > 0 or elapsed > timedelta(hours=24):
+            if gain > 0.001:# or elapsed > timedelta(hours=24):
                 pi.sell(asks[0][0])
   
 
-        if gain >0.003 or  sell:
+        if gain >sell_pct.get(pi.pair,0.003) or  sell:
             pi.sell(sell_price)
        
             
